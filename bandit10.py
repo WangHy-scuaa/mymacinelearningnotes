@@ -14,6 +14,7 @@ for i in range(10):
     Q.append(0)
     N.append(0)
 epsi=0.1
+rl=[]
 for i in range(2000):
     if random.uniform(0.0,1.0)<epsi:
         a=random.randint(0,9)
@@ -21,8 +22,9 @@ for i in range(2000):
         t=max(Q)
         a=Q.index(t)
     r=bandit(a)
+    rl.append(r)
     N[a]+=1
     Q[a]+=(1/N[a])*(r-Q[a])
 
-plt.plot(Q)
+plt.plot(rl)
 plt.show()
