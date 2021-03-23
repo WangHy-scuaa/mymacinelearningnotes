@@ -1,6 +1,8 @@
 # tensorflow官方tutorial
 # https://tensorflow.google.cn/tutorials/quickstart/beginner
 import tensorflow as tf
+from tensorflow.python.compiler.tensorrt import trt_convert_windows as trt
+
 
 print(tf.__version__)
 
@@ -22,3 +24,5 @@ model.compile(optimizer='adam',
 
 model.fit(x_train, y_train, epochs=5)
 model.evaluate(x_test, y_test)
+
+converter=trt.TrtConverterWindows()
