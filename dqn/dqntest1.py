@@ -35,3 +35,11 @@ class Estimator(object):
     def __init__(self) -> None:
         super().__init__()
         
+    def _build_model(self):
+        """
+        建立网络模型
+        """
+        model=tf.keras.Sequential([
+            tf.keras.layers.Conv2D(32,8,4,activation='relu')
+        ])
+
