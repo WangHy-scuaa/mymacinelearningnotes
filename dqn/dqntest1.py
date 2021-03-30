@@ -70,4 +70,13 @@ class Estimator(object):
 
         # 先将predictions转换成一维向量然后切片
         self.act_predict=tf.gather(tf.reshape(self.predictions,[-1]),incidents)
+        
+        # 计算损失函数
+        # self.losses=tf.math.squared_difference(self.y_pl,self.act_predict)
+        # self.loss=tf.math.reduce_mean(self.losses)
+        # 上面两步计算可以简化为直接一步计算
+        self.loss=tf.keras.losses.MSE(self.y_pl,self.act_predict)
 
+        # RMSprop优化器
+        self.optimizer=tf.keras.optimizers.RMSprop(0.00025,0.99,0.0,1e-7)
+        self.train_op=self.optimizer.minimize(self.loss)
