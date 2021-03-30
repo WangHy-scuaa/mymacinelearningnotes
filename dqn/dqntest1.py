@@ -6,6 +6,8 @@ import os
 import random
 import sys 
 import tensorflow as tf
+from tensorflow import keras
+from tensorflow.python.ops.gen_array_ops import gather
 
 if "../" not in sys.path:
     sys.path.append("../")
@@ -35,3 +37,37 @@ class Estimator(object):
     def __init__(self) -> None:
         super().__init__()
         
+    def _build_model(self):
+        """
+        建立网络模型
+        """
+        # 建立输入图像的变量
+        self.x_pl=tf.Variable(tf.zeros(shape=[None,84,84,4]),name='X')
+        # target value
+        self.y_pl=tf.Variable(tf.zeros(shape=[None]),name='y')
+        # 选择动作的序号
+        self.actions_pl=tf.Variable(tf.zeros(shape=None),name='actions')
+        # 映射像素值大小
+        x=tf.cast(self.x_pl,tf.float32)/255.0 
+        bat_size=tf.shape(self.x_pl)[0]
+        model=tf.keras.Sequential([
+            # 卷积层
+            tf.keras.layers.Conv2D(32,8,4,activation='relu'),
+            tf.keras.layers.Conv2D(64,4,2,activation='relu'),
+            tf.keras.layers.Conv2D(64,3,1,activation='relu'),
+            # 全连接层
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(512),
+            tf.keras.layers.Dense(len(VALID_ACTIONS))
+        ])
+        self.predictions=model.outputs
+        # 进行检验输出
+        print(self.predictions)
+
+        # 求动作函数的预测值
+        incidents=tf.range(bat_size)*tf.shape(self.predictions)[1]+self.actions_pl
+        # ???需要后面解释一下
+
+        # 先将predictions转换成一维向量然后切片
+        self.act_predict=tf.gather(tf.reshape(self.predictions,[-1]),incidents)
+
