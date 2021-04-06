@@ -8,6 +8,7 @@ import sys
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.python.ops.gen_array_ops import gather
+import datetime
 
 if "../" not in sys.path:
     sys.path.append("../")
@@ -48,7 +49,7 @@ class Estimator(object):
         # 选择动作的序号
         self.actions_pl=tf.Variable(tf.zeros(shape=None),name='actions')
         # 映射像素值大小
-        x=tf.cast(self.x_pl,tf.float32)/255.0 
+        X=tf.cast(self.x_pl,tf.float32)/255.0 
         bat_size=tf.shape(self.x_pl)[0]
         model=tf.keras.Sequential([
             # 卷积层
@@ -80,3 +81,10 @@ class Estimator(object):
         # RMSprop优化器
         self.optimizer=tf.keras.optimizers.RMSprop(0.00025,0.99,0.0,1e-7)
         self.train_op=self.optimizer.minimize(self.loss)
+
+        # tensorboard显出训练总结
+        log_dir="logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+
+    # def predict(self,)
+    # 这里需要考虑一下预测是怎么搞的
