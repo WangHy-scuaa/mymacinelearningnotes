@@ -1,6 +1,9 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 #============================ 导入所需的库 ===========================================
+from __future__ import print_function
+
 import tensorflow as tf
+
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Conv2D, Activation, MaxPool2D, Flatten, Dense
 
@@ -10,14 +13,14 @@ import random
 import numpy as np
 from collections import deque
 import os 
-# os.environ['CUDA_VISIBLE_DEVICES']='0'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 
-sys.path.append("state/")
-import get_statecopy as state
+sys.path.append("game/")
+# import wrapped_flappy_bird as game
 
-GAME = 'CartPole-v0' # 游戏名称
+GAME = 'FlappyBird' # 游戏名称
 ACTIONS = 2 # 2个动作数量
-ACTIONS_NAME=['left','right']  #动作名
+ACTIONS_NAME=['不动','起飞']  #动作名
 GAMMA = 0.99 # 未来奖励的衰减
 OBSERVE = 10000. # 训练前观察积累的轮数
 EPSILON = 0.0001
@@ -25,9 +28,9 @@ REPLAY_MEMORY = 50000 # 观测存储器D的容量
 BATCH = 32 # 训练batch大小
 old_time = 0
 
-class DQN_Net(Model):
+class MyNet(Model):
     def __init__(self):
-        super(DQN_Net, self).__init__()
+        super(MyNet, self).__init__()
         self.c1_1 = Conv2D(filters=16, kernel_size=(3, 3), padding='same',
                            kernel_initializer=tf.keras.initializers.TruncatedNormal(mean=0.0, stddev=0.01, seed=None),
                            bias_initializer = tf.keras.initializers.Constant(value=0.01))  # 卷积层
@@ -103,7 +106,7 @@ def trainNetwork(istrain):
 #============================ 模型创建与加载 ===========================================
 
     # 模型创建
-    net1 = DQN_Net()
+    net1 = MyNet()
 #============================ 配置模型 ===========================================
     optimizer = tf.keras.optimizers.Adam(learning_rate = 1e-6, epsilon=1e-08)  #1e-6
 

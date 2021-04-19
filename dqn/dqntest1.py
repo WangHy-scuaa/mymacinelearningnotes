@@ -9,6 +9,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.python.ops.gen_array_ops import gather
 import datetime
+# from import 
 
 if "../" not in sys.path:
     sys.path.append("../")
@@ -92,3 +93,9 @@ class Estimator(object):
 
     # def predict(self,)
     # 这里需要考虑一下预测是怎么搞的
+
+    def deep_q_learning(replay_memory_size=50000,replay_memory_init_size=5000,update_target_estimator_every=10000,
+                        discount_factor=0.99,epsilon_start=1.0,epsilon_end=0.1,epsilon_decay_steps=500000,batch_size=32,record_video_every=50):
+        # 属性变换矩阵,其中是各个属性的名称
+        Transition=namedtuple("Transition",["state","action","reward","next_state","done"])
+        replay_memory=[]
