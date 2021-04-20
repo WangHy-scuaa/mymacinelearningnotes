@@ -10,14 +10,14 @@ import random
 import numpy as np
 from collections import deque
 import os 
-# os.environ['CUDA_VISIBLE_DEVICES']='0'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 
-sys.path.append("state/")
+# sys.path.append("state/")
 import get_statecopy as state
 
 GAME = 'CartPole-v0' # 游戏名称
-ACTIONS = 2 # 2个动作数量
-ACTIONS_NAME=['left','right']  #动作名
+ACTIONS = 8 # 2个动作数量
+ACTIONS_NAME=['forward','back','roll_right','roll_left','yaw_left','yaw_right','higher','lower']  #动作名
 GAMMA = 0.99 # 未来奖励的衰减
 OBSERVE = 10000. # 训练前观察积累的轮数
 EPSILON = 0.0001
@@ -111,7 +111,7 @@ def trainNetwork(istrain):
     t = 0 #初始化TIMESTEP
 
     # 加载保存的网络参数
-    checkpoint_save_path = "./model/FlappyBird"
+    checkpoint_save_path = "./model/Airsim"
     if os.path.exists(checkpoint_save_path + '.index'):
         print('-------------load the model-----------------')
         net1.load_weights(checkpoint_save_path)
@@ -120,16 +120,18 @@ def trainNetwork(istrain):
 
 #============================ 加载(搜集)数据集 ===========================================
 
-    # 打开游戏
-    game_state = game.GameState()
+    # 打开飞行模拟
+    flying_state = state.FlyingState(200,200,-10)
+    # destination:(x,y,z)
 
     # 将每一轮的观测存在D中，之后训练从D中随机抽取batch个数据训练，以打破时间连续导致的相关性，保证神经网络训练所需的随机性。
     D = deque()
 
-    #初始化状态并且预处理图片，把连续的四帧图像作为一个输入（State）
-    do_nothing = np.zeros(ACTIONS)
-    do_nothing[0] = 1
-    x_t, r_0, terminal, _ = game_state.frame_step(do_nothing)
+    #初始化状态并且预处理图片，把连续的四帧图像作为一个输入(state)
+    do_forward = np.zeros(ACTIONS)
+    # 在action lists中选中对应的操作设置为1
+    do_forward[0] = 1
+    x_t, r_0, terminal, _ = flying_state.frame_step(do_forward)
     x_t = cv2.cvtColor(cv2.resize(x_t, (80, 80)), cv2.COLOR_BGR2GRAY)
     ret, x_t = cv2.threshold(x_t,1,255,cv2.THRESH_BINARY)
     s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
@@ -156,7 +158,7 @@ def trainNetwork(istrain):
             a_t_to_game[action_index] = 1
 
         #执行这个动作并观察下一个状态以及reward
-        x_t1_colored, r_t, terminal, score = game_state.frame_step(a_t_to_game)
+        x_t1_colored, r_t, terminal, score = flying_state.frame_step(a_t_to_game)
         print("============== score ====================")
         print(score)
 

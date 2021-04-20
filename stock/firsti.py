@@ -1,7 +1,7 @@
 # tensorflow官方tutorial
 # https://tensorflow.google.cn/tutorials/quickstart/beginner
 import tensorflow as tf
-from tensorflow.python.compiler.tensorrt import trt_convert_windows as trt
+# from tensorflow.python.compiler.tensorrt import trt_convert_windows as trt
 
 
 print(tf.__version__)
